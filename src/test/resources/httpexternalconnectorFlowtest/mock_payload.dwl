@@ -1,0 +1,10 @@
+[
+  "Indian/Chagos",
+  "Indian/Christmas",
+  "Indian/Cocos",
+  "Indian/Kerguelen",
+  "Indian/Mahe",
+  "Indian/Maldives",
+  "Indian/Mauritius",
+  "Indian/Reunion"
+]

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="40999e33-629d-4171-9de5-bedd53b12092" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d6bd0c1b-bebc-4ae3-8575-6486e850656a" >
+		<http:request-connection host="www.worldtimeapi.org" port="80" />
+	</http:request-config>
+	<flow name="httpexternalconnectorFlow" doc:id="58545d74-b46e-4e95-a104-0a8e793e4f4f" >
+		<http:listener doc:name="base(8082)" doc:id="6baa3f41-629d-486e-ba33-ab88964a8dec" config-ref="HTTP_Listener_config" path="/ext"/>
+		<http:request method="GET" doc:name="Request" doc:id="b473fe13-a493-49ab-82bd-c5b0fcc9c2ae" config-ref="HTTP_Request_configuration" path="/api/timezone/Indian/"/>
+		<logger level="INFO" doc:name="test" doc:id="83d0454d-950d-4bc2-9593-1518d867888e" message="#[payload]"/>
+		<ee:transform doc:name="required o/p" doc:id="79a1297d-128c-40dc-911a-5084a42798d9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml writeDeclaration=false
+---
+
+	city:
+	{
+		clint_ip: payload.client_ip,
+		datetime: payload.datetime,
+		day_of_week: payload.day_of_week,
+		day_of_year:payload.day_of_year,
+		timezone:payload.timezone,
+		utc_date:(payload.utc_datetime splitBy("T"))[0],  
+		utc_offset:payload.utc_offset,
+		week_number:payload.week_number                  
+	}
+	]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
